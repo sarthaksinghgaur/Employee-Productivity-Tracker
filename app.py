@@ -55,27 +55,9 @@ def admin_required(f):
 # Routes
 @app.route('/')
 def index():
-    if 'employee_id' in session:
-        return redirect(url_for('dashboard'))
-    return render_template('login.html')
+    return render_template('homepage.html')
 
 
-# Traditional login (POST)
-@app.route('/login', methods=['POST'])
-def login():
-    session.clear()  # clear any previous session
-    email = request.form['email']
-    password = request.form['password']
-    employee = Employee.query.filter_by(email=email, password=password).first()
-    if employee:
-        session['employee_id'] = employee.id
-        session['employee_name'] = employee.name
-        session['employee_role'] = employee.role
-        if employee.role == 'admin':
-            return redirect(url_for('admin_users'))
-        else:
-            return redirect(url_for('dashboard'))
-    return 'Invalid credentials', 401
 
 # MSAL login (GET)
 @app.route('/login')
