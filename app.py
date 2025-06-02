@@ -46,7 +46,25 @@ def login():
 def dashboard():
     if 'employee_id' not in session:
         return redirect(url_for('index'))
-    return render_template('dashboard.html', name=session['employee_name'])
+
+    # Determine current status
+    last_record = Attendance.query.filter_by(employee_id=session['employee_id'])\
+                                  .order_by(Attendance.timestamp.desc())\
+                                  .first()
+
+    if last_record:
+        if last_record.action_type == 'login' or last_record.action_type == 'break_end':
+            status = 'Working'
+        elif last_record.action_type == 'break_start':
+            status = 'On Break'
+        elif last_record.action_type == 'logout':
+            status = 'Not Working'
+        else:
+            status = 'Unknown'
+    else:
+        status = 'Not Working'
+
+    return render_template('dashboard.html', name=session['employee_name'], status=status)
 
 @app.route('/attendance', methods=['POST'])
 def mark_attendance():

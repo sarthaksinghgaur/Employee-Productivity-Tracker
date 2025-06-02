@@ -3,6 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <title>Dashboard</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+      padding: 0;
+      flex-direction: column;
+    }
+    h2 {
+      color: #007bff;
+    }
+    p {
+      font-size: 1.1em;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 0.5em 1em;
+      margin: 0.5em;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
   <script>
     function mark(action) {
       fetch('/attendance', {
@@ -11,16 +50,24 @@
         body: JSON.stringify({ action_type: action })
       })
       .then(res => res.json())
-      .then(data => alert(data.message));
+      .then(data => {
+        alert(data.message);
+        location.reload();  // Refresh the page to show updated status
+      });
     }
   </script>
 </head>
 <body>
   <h2>Welcome, {{ name }}</h2>
-  <button onclick="mark('login')">Start Work</button>
-  <button onclick="mark('logout')">End Work</button>
-  <button onclick="mark('break_start')">Start Break</button>
-  <button onclick="mark('break_end')">End Break</button>
+  <p><strong>Current Status:</strong> {{ status }}</p>
+  {% if status == 'Not Working' %}
+    <button onclick="mark('login')">Start Work</button>
+  {% elif status == 'Working' %}
+    <button onclick="mark('break_start')">Start Break</button>
+    <button onclick="mark('logout')">End Work</button>
+  {% elif status == 'On Break' %}
+    <button onclick="mark('break_end')">End Break</button>
+  {% endif %}
   <br><br>
   <a href="/attendance">View Logs</a>
   <br><br>
