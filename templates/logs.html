@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Logs</title>
+</head>
+<body>
+  <h2>Your Attendance Logs</h2>
+  <table border="1">
+    <tr>
+      <th>Action</th>
+      <th>Timestamp</th>
+    </tr>
+    {% for r in records %}
+      <tr>
+        <td>{{ r.action_type }}</td>
+        <td>{{ r.timestamp }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+  <br>
+  <a href="/dashboard">Back to Dashboard</a>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <script>
+    function mark(action) {
+      fetch('/attendance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action_type: action })
+      })
+      .then(res => res.json())
+      .then(data => alert(data.message));
+    }
+  </script>
+</head>
+<body>
+  <h2>Welcome, {{ name }}</h2>
+  <button onclick="mark('login')">Start Work</button>
+  <button onclick="mark('logout')">End Work</button>
+  <button onclick="mark('break_start')">Start Break</button>
+  <button onclick="mark('break_end')">End Break</button>
+  <br><br>
+  <a href="/attendance">View Logs</a>
+  <br><br>
+  <a href="/logout">Logout from App</a>
+</body>
+</html>
