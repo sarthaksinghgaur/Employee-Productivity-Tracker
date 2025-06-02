@@ -40,6 +40,30 @@
     button:hover {
       background-color: #34495e; /* lighter navy */
     }
+    button.start-work {
+      background-color: #28a745; /* Green */
+    }
+    button.start-work:hover {
+      background-color: #218838;
+    }
+    button.start-break {
+      background-color: #fd7e14; /* Orange */
+    }
+    button.start-break:hover {
+      background-color: #e36b0a;
+    }
+    button.end-work {
+      background-color: #dc3545; /* Red */
+    }
+    button.end-work:hover {
+      background-color: #bd2130;
+    }
+    button.end-break {
+      background-color: #007bff; /* Blue */
+    }
+    button.end-break:hover {
+      background-color: #0056b3;
+    }
     a {
       color: #2c3e50;
       text-decoration: none;
@@ -58,12 +82,12 @@
     <p id="timer"></p>
 
     {% if status == 'Not Working' %}
-      <button onclick="mark('login')">Start Work</button>
+      <button class="start-work" onclick="mark('login')">Start Work</button>
     {% elif status == 'Working' %}
-      <button onclick="mark('break_start')">Start Break</button>
-      <button onclick="mark('logout')">End Work</button>
+      <button class="start-break" onclick="mark('break_start')">Start Break</button>
+      <button class="end-work" onclick="mark('logout')">End Work</button>
     {% elif status == 'On Break' %}
-      <button onclick="mark('break_end')">End Break</button>
+      <button class="end-break" onclick="mark('break_end')">End Break</button>
     {% endif %}
 
     <br><br>
