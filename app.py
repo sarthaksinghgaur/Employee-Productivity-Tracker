@@ -151,10 +151,12 @@ def dashboard():
             status = 'Not Working'
         else:
             status = 'Unknown'
+        last_action_time = last_record.timestamp.isoformat()
     else:
         status = 'Not Working'
+        last_action_time = None
 
-    return render_template('dashboard.html', name=session['employee_name'], status=status)
+    return render_template('dashboard.html', name=session['employee_name'], status=status, last_action_time=last_action_time)
 
 @app.route('/attendance', methods=['POST'])
 def mark_attendance():

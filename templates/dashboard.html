@@ -55,6 +55,7 @@
   <div class="container">
     <h2>Welcome, {{ name }}!</h2>
     <p class="status">Current Status: <strong>{{ status }}</strong></p>
+    <p id="timer"></p>
 
     {% if status == 'Not Working' %}
       <button onclick="mark('login')">Start Work</button>
@@ -66,7 +67,7 @@
     {% endif %}
 
     <br><br>
-    <a href="/attendance">View Logs</a>
+    <a href="/attendance">View Your Time</a>
     <br><br>
     <a href="/logout">Logout</a>
   </div>
@@ -83,6 +84,31 @@
         alert(data.message);
         location.reload();
       });
+    }
+
+    // Timer logic for elapsed work/break time
+    const lastActionTime = "{{ last_action_time }}";
+    const status = "{{ status }}";
+
+    if (lastActionTime && (status === 'Working' || status === 'On Break')) {
+      // Ensure the timestamp is parsed as UTC by appending 'Z'
+      const startTime = new Date(lastActionTime + 'Z');
+      const timerElement = document.getElementById('timer');
+
+      function updateTimer() {
+        const now = new Date();
+        const diffMs = now - startTime;
+        const totalSeconds = Math.floor(diffMs / 1000);
+
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        timerElement.textContent = `Elapsed Time: ${hours}h ${minutes}m ${seconds}s`;
+      }
+
+      updateTimer();
+      setInterval(updateTimer, 1000);
     }
   </script>
 </body>
