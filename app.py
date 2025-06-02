@@ -113,11 +113,43 @@ def view_attendance():
     if 'employee_id' not in session:
         return redirect(url_for('index'))
 
-    records = Attendance.query.filter_by(employee_id=session['employee_id']).all()
+    records = Attendance.query.filter_by(employee_id=session['employee_id']).order_by(Attendance.timestamp.asc()).all()
+
+    work_start = None
+    break_start = None
+    total_work = 0
+    total_break = 0
+
+    for r in records:
+        if r.action_type == 'login':
+            work_start = r.timestamp
+        elif r.action_type == 'logout' and work_start:
+            total_work += (r.timestamp - work_start).total_seconds()
+            work_start = None
+        elif r.action_type == 'break_start' and work_start:
+            break_start = r.timestamp
+        elif r.action_type == 'break_end' and break_start:
+            total_break += (r.timestamp - break_start).total_seconds()
+            break_start = None
+
+    net_work = max(total_work - total_break, 0)
+
+    work_hours = int(total_work // 3600)
+    work_minutes = int((total_work % 3600) // 60)
+    break_hours = int(total_break // 3600)
+    break_minutes = int((total_break % 3600) // 60)
+    net_work_hours = int(net_work // 3600)
+    net_work_minutes = int((net_work % 3600) // 60)
 
     return render_template(
         'logs.html',
-        records=records
+        records=records,
+        work_hours=work_hours,
+        work_minutes=work_minutes,
+        break_hours=break_hours,
+        break_minutes=break_minutes,
+        net_work_hours=net_work_hours,
+        net_work_minutes=net_work_minutes
     )
 
 @app.route('/admin/users')
@@ -130,8 +162,45 @@ def admin_users():
 @admin_required
 def admin_logs(user_id):
     employee = Employee.query.get_or_404(user_id)
-    records = Attendance.query.filter_by(employee_id=user_id).order_by(Attendance.timestamp.desc()).all()
-    return render_template('logs.html', records=records, name=employee.name)
+    records = Attendance.query.filter_by(employee_id=user_id).order_by(Attendance.timestamp.asc()).all()
+
+    work_start = None
+    break_start = None
+    total_work = 0
+    total_break = 0
+
+    for r in records:
+        if r.action_type == 'login':
+            work_start = r.timestamp
+        elif r.action_type == 'logout' and work_start:
+            total_work += (r.timestamp - work_start).total_seconds()
+            work_start = None
+        elif r.action_type == 'break_start' and work_start:
+            break_start = r.timestamp
+        elif r.action_type == 'break_end' and break_start:
+            total_break += (r.timestamp - break_start).total_seconds()
+            break_start = None
+
+    net_work = max(total_work - total_break, 0)
+
+    work_hours = int(total_work // 3600)
+    work_minutes = int((total_work % 3600) // 60)
+    break_hours = int(total_break // 3600)
+    break_minutes = int((total_break % 3600) // 60)
+    net_work_hours = int(net_work // 3600)
+    net_work_minutes = int((net_work % 3600) // 60)
+
+    return render_template(
+        'logs.html',
+        records=records,
+        name=employee.name,
+        work_hours=work_hours,
+        work_minutes=work_minutes,
+        break_hours=break_hours,
+        break_minutes=break_minutes,
+        net_work_hours=net_work_hours,
+        net_work_minutes=net_work_minutes
+    )
 
 # Create a sample user if not exists
 with app.app_context():
@@ -158,3 +227,4 @@ with app.app_context():
 
 if __name__ == '__main__':
     app.run(debug=True)
+    
