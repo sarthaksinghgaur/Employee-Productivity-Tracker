@@ -3,10 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <title>Logs</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+      margin: 0;
+      padding: 2em;
+    }
+    h2 {
+      color: #007bff;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 1em;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5em;
+      text-align: left;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
   <h2>Your Attendance Logs</h2>
-  <table border="1">
+  <table>
     <tr>
       <th>Action</th>
       <th>Timestamp</th>
@@ -18,7 +51,10 @@
       </tr>
     {% endfor %}
   </table>
-  <br>
-  <a href="/dashboard">Back to Dashboard</a>
+  {% if session['employee_role'] == 'admin' %}
+    <a href="/admin/users">Back to Users</a>
+  {% else %}
+    <a href="/dashboard">Back to Dashboard</a>
+  {% endif %}
 </body>
 </html>
