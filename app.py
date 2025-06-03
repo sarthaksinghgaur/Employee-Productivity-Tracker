@@ -59,7 +59,11 @@ def index():
 
 
 
-# MSAL login (GET)
+#
+# Dual login support: Microsoft SSO and manual login
+#
+
+# Microsoft SSO login (GET)
 @app.route('/login')
 def msal_login():
     session.clear()
@@ -74,6 +78,27 @@ def msal_login():
         redirect_uri=request.base_url.replace('/login', REDIRECT_PATH)
     )
     return redirect(auth_url)
+
+# Manual login form
+@app.route('/login/form')
+def login_form():
+    return render_template('login.html')
+
+# Manual login POST handler
+@app.route('/login/manual', methods=['POST'])
+def manual_login():
+    email = request.form['email']
+    password = request.form['password']
+    employee = Employee.query.filter_by(email=email, password=password).first()
+    if employee:
+        session['employee_id'] = employee.id
+        session['employee_name'] = employee.name
+        session['employee_role'] = employee.role
+        if employee.role == 'admin':
+            return redirect(url_for('admin_users'))
+        else:
+            return redirect(url_for('dashboard'))
+    return 'Invalid credentials', 401
 
 # MSAL redirect/callback
 @app.route(REDIRECT_PATH)
